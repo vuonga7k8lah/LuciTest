@@ -1,0 +1,23 @@
+version: "3.4"
+services:
+  mysql:
+    image: mysql:5.7
+    container_name: user_mysql_test
+    ports:
+      - "8400:3306"
+    volumes:
+      - users_mysql:/var/lib/mysql
+    environment:
+      MYSQL_DATABASE: users
+      MYSQL_USER: mysql
+      MYSQL_PASSWORD: root
+      MYSQL_ROOT_PASSWORD: root
+    restart: unless-stopped
+    networks:
+      - user_default
+networks:
+  user_default:
+    driver: bridge
+    external: true
+volumes:
+  users_mysql: {}
