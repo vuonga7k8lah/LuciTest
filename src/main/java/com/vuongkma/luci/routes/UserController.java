@@ -9,6 +9,7 @@ import com.vuongkma.luci.helpers.ResponseFormat;
 import com.vuongkma.luci.services.UserServiceImpl;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
@@ -28,8 +29,18 @@ public class UserController {
     @Autowired
     private ModelMapper modelMapper;
 
+    private final String EMPLOYEE_CACHE = "EMPLOYEE";
+
+    @Autowired
+    RedisTemplate redisTemplate;
+
+
     @GetMapping
     public ResponseEntity<Object> findAll() {
+        redisTemplate.opsForValue().set("hello","Say hello");
+        redisTemplate.opsForValue().set("test","VuongTest11");
+        System.out.println(redisTemplate.opsForValue().get("hello"));
+        System.out.println(redisTemplate.opsForValue().get("test"));
         var users = this.userService.findAll();
         return ResponseEntity.status(HttpStatus.OK).body(
                 ResponseFormat.build(users, "Congrats, all users have been fetched successfully.")
@@ -69,7 +80,6 @@ public class UserController {
             @PathVariable("id") Long id,
             @Valid @RequestBody UserDTO userDTO
     ) {
-        System.out.println(userDTO.getUsername());
         UserEntity userEntity = this.modelMapper.map(userDTO, UserEntity.class);
 
         var user = this.userService.update(id, userEntity);
